@@ -11,7 +11,7 @@ defmodule Calamity.Application do
       # Start the Ecto repository
       supervisor(Calamity.Repo, []),
       # Start the endpoint when the application starts
-      supervisor(CalamityWeb.Endpoint, []),
+      supervisor(CalamityWeb.Endpoint, [])
       # Start your own worker by calling: Calamity.Worker.start_link(arg1, arg2, arg3)
       # worker(Calamity.Worker, [arg1, arg2, arg3]),
     ]
