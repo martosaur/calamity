@@ -22,7 +22,7 @@ defmodule Calamity.Calamity do
   end
 
   @doc """
-  Gets a single account.
+  Gets a single account by id or name.
 
   Raises `Ecto.NoResultsError` if the Account does not exist.
 
@@ -35,7 +35,18 @@ defmodule Calamity.Calamity do
       ** (Ecto.NoResultsError)
 
   """
-  def get_account!(id), do: Repo.get!(Account, id)
+  def get_account!(id) do
+    cond do
+      is_integer(id) ->
+        Repo.get!(Account, id)
+
+      match?({_, ""}, Integer.parse(id)) ->
+        Repo.get!(Account, id)
+
+      true ->
+        Repo.get_by!(Account, name: id)
+    end
+  end
 
   @doc """
   Creates a account.

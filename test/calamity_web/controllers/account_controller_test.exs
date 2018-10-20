@@ -60,6 +60,23 @@ defmodule CalamityWeb.AccountControllerTest do
              }
     end
 
+    test "updates account by name", %{conn: conn, account: %Account{id: id} = account} do
+      conn =
+        put(conn, account_path(conn, :update, %{account | id: account.name}),
+          account: @update_attrs
+        )
+
+      assert %{"id" => ^id} = json_response(conn, 200)["data"]
+
+      conn = get(conn, account_path(conn, :show, id))
+
+      assert json_response(conn, 200)["data"] == %{
+               "id" => id,
+               "data" => %{},
+               "name" => "some updated name"
+             }
+    end
+
     test "renders errors when data is invalid", %{conn: conn, account: account} do
       conn = put(conn, account_path(conn, :update, account), account: @invalid_attrs)
       assert json_response(conn, 422)["errors"] != %{}
@@ -71,6 +88,15 @@ defmodule CalamityWeb.AccountControllerTest do
 
     test "deletes chosen account", %{conn: conn, account: account} do
       conn = delete(conn, account_path(conn, :delete, account))
+      assert response(conn, 204)
+
+      assert_error_sent(404, fn ->
+        get(conn, account_path(conn, :show, account))
+      end)
+    end
+
+    test "deletes chosen account by name", %{conn: conn, account: account} do
+      conn = delete(conn, account_path(conn, :delete, %{account | id: account.name}))
       assert response(conn, 204)
 
       assert_error_sent(404, fn ->

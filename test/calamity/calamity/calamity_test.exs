@@ -29,6 +29,17 @@ defmodule Calamity.CalamityTest do
       assert Calamity.get_account!(account.id) == account
     end
 
+    test "get_account!/1 returns the account with given name" do
+      account = account_fixture()
+      assert Calamity.get_account!(account.name) == account
+    end
+
+    test "get_account!/1 has id in prioriry" do
+      account1 = account_fixture(%{data: %{}, name: "first"})
+      account2 = account_fixture(%{data: %{}, name: "#{account1.id}"})
+      assert Calamity.get_account!(account2.name) == account1
+    end
+
     test "create_account/1 with valid data creates a account" do
       assert {:ok, %Account{} = account} = Calamity.create_account(@valid_attrs)
       assert account.data == %{}
@@ -37,6 +48,13 @@ defmodule Calamity.CalamityTest do
 
     test "create_account/1 with invalid data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = Calamity.create_account(@invalid_attrs)
+    end
+
+    test "create_account/1 name should be uniq" do
+      account = account_fixture()
+
+      assert {:error, %Ecto.Changeset{}} =
+               Calamity.create_account(%{name: account.name, data: %{}})
     end
 
     test "update_account/2 with valid data updates the account" do

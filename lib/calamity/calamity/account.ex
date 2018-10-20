@@ -14,5 +14,6 @@ defmodule Calamity.Calamity.Account do
     account
     |> cast(attrs, [:name, :data])
     |> validate_required([:name, :data])
+    |> unique_constraint(:name)
   end
 end
