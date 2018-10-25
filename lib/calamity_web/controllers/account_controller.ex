@@ -6,6 +6,11 @@ defmodule CalamityWeb.AccountController do
 
   action_fallback(CalamityWeb.FallbackController)
 
+  def index(conn, %{"search" => search}) do
+    accounts = Calamity.search_accounts_by_name(search)
+    render(conn, "index.json", accounts: accounts)
+  end
+
   def index(conn, _params) do
     accounts = Calamity.list_accounts()
     render(conn, "index.json", accounts: accounts)

@@ -17,8 +17,25 @@ defmodule Calamity.Calamity do
       [%Account{}, ...]
 
   """
-  def list_accounts do
+  def list_accounts() do
     Repo.all(Account)
+  end
+
+  @doc """
+  Search for account name and returns a list of accounts.
+
+  ## Examples
+
+    iex> search_accounts_by_name("hello world")
+    [%Account{}, ...]
+
+  """
+  def search_accounts_by_name(search) do
+    search_string = "%#{search}%"
+
+    Account
+    |> where([a], ilike(a.name, ^search_string))
+    |> Repo.all()
   end
 
   @doc """

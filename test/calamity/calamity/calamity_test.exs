@@ -24,6 +24,18 @@ defmodule Calamity.CalamityTest do
       assert Calamity.list_accounts() == [account]
     end
 
+    test "search_accounts_by_name/1 can search for accounts" do
+      account1 = account_fixture()
+      account2 = account_fixture(%{data: %{}, name: "hello world"})
+      assert Calamity.search_accounts_by_name("o w") == [account2]
+    end
+
+    test "search_accounts_by_name/1 search is can insensitive" do
+      account1 = account_fixture()
+      account2 = account_fixture(%{data: %{}, name: "SOME_NAME"})
+      assert Calamity.search_accounts_by_name("some") == [account1, account2]
+    end
+
     test "get_account!/1 returns the account with given id" do
       account = account_fixture()
       assert Calamity.get_account!(account.id) == account

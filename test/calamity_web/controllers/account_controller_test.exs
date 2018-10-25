@@ -18,8 +18,15 @@ defmodule CalamityWeb.AccountControllerTest do
   end
 
   describe "index" do
+    setup [:create_account]
+
     test "lists all accounts", %{conn: conn} do
       conn = get(conn, account_path(conn, :index))
+      assert json_response(conn, 200)["data"] |> length() == 1
+    end
+
+    test "search for accounts", %{conn: conn} do
+      conn = get(conn, account_path(conn, :index, search: "2"))
       assert json_response(conn, 200)["data"] == []
     end
   end
