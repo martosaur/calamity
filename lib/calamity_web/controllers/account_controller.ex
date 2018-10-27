@@ -45,4 +45,9 @@ defmodule CalamityWeb.AccountController do
       send_resp(conn, :no_content, "")
     end
   end
+
+  def search(conn, %{"search" => search}) do
+    accounts = Calamity.search_accounts_by_text(search)
+    render(conn, "index.json", accounts: accounts)
+  end
 end

@@ -23,6 +23,7 @@ defmodule CalamityWeb.Router do
   scope "/api", CalamityWeb do
     pipe_through(:api)
 
-    resources("/accounts", AccountController)
+    resources("/accounts", AccountController, only: [:index, :show, :create, :update, :delete])
+    post("/accounts/search", AccountController, :search)
   end
 end

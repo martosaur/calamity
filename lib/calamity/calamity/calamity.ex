@@ -39,6 +39,29 @@ defmodule Calamity.Calamity do
   end
 
   @doc """
+  Makes a full text search within a name + data fields
+
+  ## Examples
+
+    iex> search_accounts_by_text("world")
+    [%Account{}, ...]
+
+  """
+  def search_accounts_by_text(search) do
+    Account
+    |> where(
+      [a],
+      fragment(
+        "(to_tsvector('english', coalesce(?, '')) || jsonb_to_tsvector('english', coalesce(?, '{}'::jsonb), '[\"all\"]'::jsonb)) @@ websearch_to_tsquery('english', ?)",
+        a.name,
+        a.data,
+        ^search
+      )
+    )
+    |> Repo.all()
+  end
+
+  @doc """
   Gets a single account by id or name.
 
   Raises `Ecto.NoResultsError` if the Account does not exist.
