@@ -62,6 +62,21 @@ defmodule Calamity.Calamity do
   end
 
   @doc """
+  Makes a json search within a data field
+
+  ## Examples
+
+    iex> search_accounts_by_text(%{"hello" => "world"})
+    [%Account{}, ...]
+
+  """
+  def search_accounts_by_map(search) do
+    Account
+    |> where([a], fragment("? @> ?", a.data, ^search))
+    |> Repo.all()
+  end
+
+  @doc """
   Gets a single account by id or name.
 
   Raises `Ecto.NoResultsError` if the Account does not exist.

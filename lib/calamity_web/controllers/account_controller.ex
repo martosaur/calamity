@@ -46,8 +46,13 @@ defmodule CalamityWeb.AccountController do
     end
   end
 
-  def search(conn, %{"search" => search}) do
+  def search(conn, %{"search" => search}) when is_bitstring(search) do
     accounts = Calamity.search_accounts_by_text(search)
+    render(conn, "index.json", accounts: accounts)
+  end
+
+  def search(conn, %{"search" => search}) when is_map(search) do
+    accounts = Calamity.search_accounts_by_map(search)
     render(conn, "index.json", accounts: accounts)
   end
 end

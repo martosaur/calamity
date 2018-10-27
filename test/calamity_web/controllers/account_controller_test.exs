@@ -41,6 +41,11 @@ defmodule CalamityWeb.AccountControllerTest do
       conn = post(conn, account_path(conn, :search, search: "hello"))
       assert json_response(conn, 200)["data"] |> length() == 0
     end
+
+    test "performs a json search for account" do
+      conn = post(conn, account_path(conn, :search, search: %{"hello" => "world"}))
+      assert json_response(conn, 200)["data"] |> length() == 0
+    end
   end
 
   describe "create account" do
