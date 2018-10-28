@@ -55,4 +55,12 @@ defmodule CalamityWeb.AccountController do
     accounts = Calamity.search_accounts_by_map(search)
     render(conn, "index.json", accounts: accounts)
   end
+  
+  def lock(conn, %{"id" => id}) do
+    account = Calamity.get_account!(id)
+
+    with {:ok, %Account{} = account} <- Calamity.lock_account(account) do
+      render(conn, "show.json", account: account)
+    end
+  end
 end

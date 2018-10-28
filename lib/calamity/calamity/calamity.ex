@@ -167,4 +167,25 @@ defmodule Calamity.Calamity do
   def change_account(%Account{} = account) do
     Account.changeset(account, %{})
   end
+
+  @doc """
+  Locks an account if possible
+  ## Examples
+
+      iex> lock_account(account)
+      {:ok, %Account{}}
+
+  """
+  def lock_account(%Account{locked: true} = account) do
+    error_changeset =
+      account
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.add_error(:locked, "already locked")
+
+    {:error, error_changeset}
+  end
+
+  def lock_account(%Account{locked: false} = account) do
+    update_account(account, %{locked: true})
+  end
 end

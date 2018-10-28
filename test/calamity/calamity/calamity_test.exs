@@ -107,9 +107,19 @@ defmodule Calamity.CalamityTest do
       assert_raise Ecto.NoResultsError, fn -> Calamity.get_account!(account.id) end
     end
 
-    test "change_account/1 returns a account changeset" do
+    test "change_account/1 returns an account changeset" do
       account = account_fixture()
       assert %Ecto.Changeset{} = Calamity.change_account(account)
+    end
+
+    test "lock_account/1 lock account if it is not locked" do
+      account = account_fixture()
+      assert {:ok, %Account{}} = Calamity.lock_account(account)
+    end
+
+    test "lock_account/1 cant lock if already locked" do
+      account = account_fixture(locked: true)
+      assert {:error, %Ecto.Changeset{}} = Calamity.lock_account(account)
     end
   end
 end

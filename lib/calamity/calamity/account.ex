@@ -5,6 +5,7 @@ defmodule Calamity.Calamity.Account do
   schema "accounts" do
     field(:data, :map)
     field(:name, :string)
+    field(:locked, :boolean, default: false)
 
     timestamps()
   end
@@ -12,7 +13,7 @@ defmodule Calamity.Calamity.Account do
   @doc false
   def changeset(account, attrs) do
     account
-    |> cast(attrs, [:name, :data])
+    |> cast(attrs, [:name, :data, :locked])
     |> validate_required([:name, :data])
     |> unique_constraint(:name)
   end

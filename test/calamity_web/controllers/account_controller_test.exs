@@ -58,7 +58,8 @@ defmodule CalamityWeb.AccountControllerTest do
       assert json_response(conn, 200)["data"] == %{
                "id" => id,
                "data" => %{},
-               "name" => "some name"
+               "name" => "some name",
+               "locked" => false
              }
     end
 
@@ -80,7 +81,8 @@ defmodule CalamityWeb.AccountControllerTest do
       assert json_response(conn, 200)["data"] == %{
                "id" => id,
                "data" => %{},
-               "name" => "some updated name"
+               "name" => "some updated name",
+               "locked" => false
              }
     end
 
@@ -97,12 +99,30 @@ defmodule CalamityWeb.AccountControllerTest do
       assert json_response(conn, 200)["data"] == %{
                "id" => id,
                "data" => %{},
-               "name" => "some updated name"
+               "name" => "some updated name",
+               "locked" => false
              }
     end
 
     test "renders errors when data is invalid", %{conn: conn, account: account} do
       conn = put(conn, account_path(conn, :update, account), account: @invalid_attrs)
+      assert json_response(conn, 422)["errors"] != %{}
+    end
+  end
+
+  describe "lock account" do
+    setup [:create_account]
+
+    test "locks chosen account", %{conn: conn, account: account} do
+      conn = post(conn, account_path(conn, :lock, account))
+      assert json_response(conn, 200)["data"]["locked"] == true
+    end
+
+    test "422 if already locked", %{conn: conn, account: account} do
+      conn = post(conn, account_path(conn, :lock, account))
+      assert response(conn, 200)
+
+      conn = post(conn, account_path(conn, :lock, account))
       assert json_response(conn, 422)["errors"] != %{}
     end
   end
