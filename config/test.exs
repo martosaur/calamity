@@ -11,7 +11,6 @@ config :logger, level: :warn
 
 # Configure your database
 config :calamity, Calamity.Repo,
-  adapter: Ecto.Adapters.Postgres,
   username: "postgres",
   password: "postgres",
   database: "calamity_test",

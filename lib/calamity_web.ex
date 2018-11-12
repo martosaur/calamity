@@ -20,8 +20,10 @@ defmodule CalamityWeb do
   def controller do
     quote do
       use Phoenix.Controller, namespace: CalamityWeb
+
+      alias CalamityWeb.Router.Helpers, as: Routes
+
       import Plug.Conn
-      import CalamityWeb.Router.Helpers
       import CalamityWeb.Gettext
     end
   end
@@ -38,7 +40,8 @@ defmodule CalamityWeb do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
 
-      import CalamityWeb.Router.Helpers
+      alias CalamityWeb.Router.Helpers, as: Routes
+
       import CalamityWeb.ErrorHelpers
       import CalamityWeb.Gettext
     end

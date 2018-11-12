@@ -20,7 +20,7 @@ defmodule CalamityWeb.AccountController do
     with {:ok, %Account{} = account} <- Calamity.create_account(account_params) do
       conn
       |> put_status(:created)
-      |> put_resp_header("location", account_path(conn, :show, account))
+      |> put_resp_header("location", Routes.account_path(conn, :show, account))
       |> render("show.json", account: account)
     end
   end
@@ -55,7 +55,7 @@ defmodule CalamityWeb.AccountController do
     accounts = Calamity.search_accounts_by_map(search)
     render(conn, "index.json", accounts: accounts)
   end
-  
+
   def lock(conn, %{"id" => id}) do
     account = Calamity.get_account!(id)
 

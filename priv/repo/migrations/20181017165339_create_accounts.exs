@@ -3,11 +3,10 @@ defmodule Calamity.Repo.Migrations.CreateAccounts do
 
   def change do
     create table(:accounts) do
-      add :name, :string
-      add :data, :map
+      add(:name, :string)
+      add(:data, :map)
 
       timestamps()
     end
-
   end
 end

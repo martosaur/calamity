@@ -1,5 +1,5 @@
 defmodule Calamity.Repo do
-  use Ecto.Repo, otp_app: :calamity
+  use Ecto.Repo, otp_app: :calamity, adapter: Ecto.Adapters.Postgres
 
   @doc """
   Dynamically loads the repository url from the

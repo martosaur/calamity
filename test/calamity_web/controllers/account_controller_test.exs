@@ -21,12 +21,12 @@ defmodule CalamityWeb.AccountControllerTest do
     setup [:create_account]
 
     test "lists all accounts", %{conn: conn} do
-      conn = get(conn, account_path(conn, :index))
+      conn = get(conn, Routes.account_path(conn, :index))
       assert json_response(conn, 200)["data"] |> length() == 1
     end
 
     test "search for accounts", %{conn: conn} do
-      conn = get(conn, account_path(conn, :index, search: "2"))
+      conn = get(conn, Routes.account_path(conn, :index, search: "2"))
       assert json_response(conn, 200)["data"] == []
     end
   end
@@ -35,25 +35,25 @@ defmodule CalamityWeb.AccountControllerTest do
     setup [:create_account]
 
     test "performs a full text search for account" do
-      conn = post(conn, account_path(conn, :search, search: "name"))
+      conn = post(conn, Routes.account_path(conn, :search, search: "name"))
       assert json_response(conn, 200)["data"] |> length() == 1
 
-      conn = post(conn, account_path(conn, :search, search: "hello"))
+      conn = post(conn, Routes.account_path(conn, :search, search: "hello"))
       assert json_response(conn, 200)["data"] |> length() == 0
     end
 
     test "performs a json search for account" do
-      conn = post(conn, account_path(conn, :search, search: %{"hello" => "world"}))
+      conn = post(conn, Routes.account_path(conn, :search, search: %{"hello" => "world"}))
       assert json_response(conn, 200)["data"] |> length() == 0
     end
   end
 
   describe "create account" do
     test "renders account when data is valid", %{conn: conn} do
-      conn = post(conn, account_path(conn, :create), account: @create_attrs)
+      conn = post(conn, Routes.account_path(conn, :create), account: @create_attrs)
       assert %{"id" => id} = json_response(conn, 201)["data"]
 
-      conn = get(conn, account_path(conn, :show, id))
+      conn = get(conn, Routes.account_path(conn, :show, id))
 
       assert json_response(conn, 200)["data"] == %{
                "id" => id,
@@ -64,7 +64,7 @@ defmodule CalamityWeb.AccountControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
-      conn = post(conn, account_path(conn, :create), account: @invalid_attrs)
+      conn = post(conn, Routes.account_path(conn, :create), account: @invalid_attrs)
       assert json_response(conn, 422)["errors"] != %{}
     end
   end
@@ -73,10 +73,10 @@ defmodule CalamityWeb.AccountControllerTest do
     setup [:create_account]
 
     test "renders account when data is valid", %{conn: conn, account: %Account{id: id} = account} do
-      conn = put(conn, account_path(conn, :update, account), account: @update_attrs)
+      conn = put(conn, Routes.account_path(conn, :update, account), account: @update_attrs)
       assert %{"id" => ^id} = json_response(conn, 200)["data"]
 
-      conn = get(conn, account_path(conn, :show, id))
+      conn = get(conn, Routes.account_path(conn, :show, id))
 
       assert json_response(conn, 200)["data"] == %{
                "id" => id,
@@ -88,13 +88,13 @@ defmodule CalamityWeb.AccountControllerTest do
 
     test "updates account by name", %{conn: conn, account: %Account{id: id} = account} do
       conn =
-        put(conn, account_path(conn, :update, %{account | id: account.name}),
+        put(conn, Routes.account_path(conn, :update, %{account | id: account.name}),
           account: @update_attrs
         )
 
       assert %{"id" => ^id} = json_response(conn, 200)["data"]
 
-      conn = get(conn, account_path(conn, :show, id))
+      conn = get(conn, Routes.account_path(conn, :show, id))
 
       assert json_response(conn, 200)["data"] == %{
                "id" => id,
@@ -105,7 +105,7 @@ defmodule CalamityWeb.AccountControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn, account: account} do
-      conn = put(conn, account_path(conn, :update, account), account: @invalid_attrs)
+      conn = put(conn, Routes.account_path(conn, :update, account), account: @invalid_attrs)
       assert json_response(conn, 422)["errors"] != %{}
     end
   end
@@ -114,15 +114,15 @@ defmodule CalamityWeb.AccountControllerTest do
     setup [:create_account]
 
     test "locks chosen account", %{conn: conn, account: account} do
-      conn = post(conn, account_path(conn, :lock, account))
+      conn = post(conn, Routes.account_path(conn, :lock, account))
       assert json_response(conn, 200)["data"]["locked"] == true
     end
 
     test "422 if already locked", %{conn: conn, account: account} do
-      conn = post(conn, account_path(conn, :lock, account))
+      conn = post(conn, Routes.account_path(conn, :lock, account))
       assert response(conn, 200)
 
-      conn = post(conn, account_path(conn, :lock, account))
+      conn = post(conn, Routes.account_path(conn, :lock, account))
       assert json_response(conn, 422)["errors"] != %{}
     end
   end
@@ -131,20 +131,20 @@ defmodule CalamityWeb.AccountControllerTest do
     setup [:create_account]
 
     test "deletes chosen account", %{conn: conn, account: account} do
-      conn = delete(conn, account_path(conn, :delete, account))
+      conn = delete(conn, Routes.account_path(conn, :delete, account))
       assert response(conn, 204)
 
       assert_error_sent(404, fn ->
-        get(conn, account_path(conn, :show, account))
+        get(conn, Routes.account_path(conn, :show, account))
       end)
     end
 
     test "deletes chosen account by name", %{conn: conn, account: account} do
-      conn = delete(conn, account_path(conn, :delete, %{account | id: account.name}))
+      conn = delete(conn, Routes.account_path(conn, :delete, %{account | id: account.name}))
       assert response(conn, 204)
 
       assert_error_sent(404, fn ->
-        get(conn, account_path(conn, :show, account))
+        get(conn, Routes.account_path(conn, :show, account))
       end)
     end
   end
