@@ -26,5 +26,7 @@ defmodule CalamityWeb.Router do
     resources("/accounts", AccountController, only: [:index, :show, :create, :update, :delete])
     post("/accounts/search", AccountController, :search)
     post("/accounts/:id/lock", AccountController, :lock)
+
+    resources("/pools", PoolController, only: [:index, :show, :create, :update, :delete])
   end
 end

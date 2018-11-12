@@ -101,6 +101,14 @@ defmodule Calamity.CalamityTest do
       assert account == Calamity.get_account!(account.id)
     end
 
+    test "update_account/2 name should be unique" do
+      account1 = account_fixture()
+      account2 = account_fixture(%{name: "hello"})
+
+      assert {:error, %Ecto.Changeset{}} =
+               Calamity.update_account(account1, %{name: account2.name})
+    end
+
     test "delete_account/1 deletes the account" do
       account = account_fixture()
       assert {:ok, %Account{}} = Calamity.delete_account(account)
@@ -120,6 +128,83 @@ defmodule Calamity.CalamityTest do
     test "lock_account/1 cant lock if already locked" do
       account = account_fixture(locked: true)
       assert {:error, %Ecto.Changeset{}} = Calamity.lock_account(account)
+    end
+  end
+
+  describe "pools" do
+    alias Calamity.Pool
+
+    @valid_attrs %{name: "some name"}
+    @update_attrs %{name: "some updated name"}
+    @invalid_attrs %{name: nil}
+
+    def pool_fixture(attrs \\ %{}) do
+      {:ok, pool} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Calamity.create_pool()
+
+      pool
+    end
+
+    test "list_pools/0 returns all pools" do
+      pool = pool_fixture()
+      assert Calamity.list_pools() == [pool]
+    end
+
+    test "get_pool!/1 returns the pool with given id" do
+      pool = pool_fixture()
+      assert Calamity.get_pool!(pool.id) == pool
+    end
+
+    test "get_pool!/1 returns the pool with given name" do
+      pool = pool_fixture()
+      assert Calamity.get_pool!(pool.name) == pool
+    end
+
+    test "create_pool/1 with valid data creates a pool" do
+      assert {:ok, %Pool{} = pool} = Calamity.create_pool(@valid_attrs)
+      assert pool.name == "some name"
+    end
+
+    test "create_pool/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Calamity.create_pool(@invalid_attrs)
+    end
+
+    test "create_pool/1 name should be unique" do
+      pool = pool_fixture()
+
+      assert {:error, %Ecto.Changeset{}} = Calamity.create_pool(%{name: pool.name})
+    end
+
+    test "update_pool/2 with valid data updates the pool" do
+      pool = pool_fixture()
+      assert {:ok, %Pool{} = pool} = Calamity.update_pool(pool, @update_attrs)
+      assert pool.name == "some updated name"
+    end
+
+    test "update_pool/2 with invalid data returns error changeset" do
+      pool = pool_fixture()
+      assert {:error, %Ecto.Changeset{}} = Calamity.update_pool(pool, @invalid_attrs)
+      assert pool == Calamity.get_pool!(pool.id)
+    end
+
+    test "update_pool/2 name should be unique" do
+      pool1 = pool_fixture()
+      pool2 = pool_fixture(%{name: "hello"})
+      assert {:error, %Ecto.Changeset{}} = Calamity.update_pool(pool1, %{name: pool2.name})
+      assert pool1 == Calamity.get_pool!(pool1.id)
+    end
+
+    test "delete_pool/1 deletes the pool" do
+      pool = pool_fixture()
+      assert {:ok, %Pool{}} = Calamity.delete_pool(pool)
+      assert_raise Ecto.NoResultsError, fn -> Calamity.get_pool!(pool.id) end
+    end
+
+    test "change_pool/1 returns a pool changeset" do
+      pool = pool_fixture()
+      assert %Ecto.Changeset{} = Calamity.change_pool(pool)
     end
   end
 end

@@ -188,4 +188,111 @@ defmodule Calamity.Calamity do
   def lock_account(%Account{locked: false} = account) do
     update_account(account, %{locked: true})
   end
+
+  alias Calamity.Calamity.Pool
+
+  @doc """
+  Returns the list of pools.
+
+  ## Examples
+
+      iex> list_pools()
+      [%Pool{}, ...]
+
+  """
+  def list_pools do
+    Repo.all(Pool)
+  end
+
+  @doc """
+  Gets a single pool.
+
+  Raises `Ecto.NoResultsError` if the Pool does not exist.
+
+  ## Examples
+
+      iex> get_pool!(123)
+      %Pool{}
+
+      iex> get_pool!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_pool!(id) do
+    cond do
+      is_integer(id) ->
+        Repo.get!(Pool, id)
+
+      match?({_, ""}, Integer.parse(id)) ->
+        Repo.get!(Pool, id)
+
+      true ->
+        Repo.get_by!(Pool, name: id)
+    end
+  end
+
+  @doc """
+  Creates a pool.
+
+  ## Examples
+
+      iex> create_pool(%{field: value})
+      {:ok, %Pool{}}
+
+      iex> create_pool(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_pool(attrs \\ %{}) do
+    %Pool{}
+    |> Pool.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a pool.
+
+  ## Examples
+
+      iex> update_pool(pool, %{field: new_value})
+      {:ok, %Pool{}}
+
+      iex> update_pool(pool, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_pool(%Pool{} = pool, attrs) do
+    pool
+    |> Pool.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a Pool.
+
+  ## Examples
+
+      iex> delete_pool(pool)
+      {:ok, %Pool{}}
+
+      iex> delete_pool(pool)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_pool(%Pool{} = pool) do
+    Repo.delete(pool)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking pool changes.
+
+  ## Examples
+
+      iex> change_pool(pool)
+      %Ecto.Changeset{source: %Pool{}}
+
+  """
+  def change_pool(%Pool{} = pool) do
+    Pool.changeset(pool, %{})
+  end
 end
