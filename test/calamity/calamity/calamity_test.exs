@@ -25,7 +25,7 @@ defmodule Calamity.CalamityTest do
     end
 
     test "search_accounts_by_name/1 can search for accounts" do
-      account1 = account_fixture()
+      account_fixture()
       account2 = account_fixture(%{data: %{}, name: "hello world"})
       assert Calamity.search_accounts_by_name("o w") == [account2]
     end
@@ -38,19 +38,19 @@ defmodule Calamity.CalamityTest do
 
     test "search_accounts_by_text/1 searches through names" do
       account1 = account_fixture()
-      account2 = account_fixture(%{data: %{}, name: "hello world"})
+      account_fixture(%{data: %{}, name: "hello world"})
       assert Calamity.search_accounts_by_text("name") == [account1]
     end
 
     test "search_accounts_by_text/1 searches through data" do
-      account1 = account_fixture()
+      account_fixture()
       account2 = account_fixture(%{data: %{"my" => %{"pinkie" => "pie"}}, name: "hello world"})
       assert Calamity.search_accounts_by_text("pinkie") == [account2]
     end
 
     test "search_accounts_by_map/1 searches by data" do
       account1 = account_fixture(%{data: %{"hello" => "world"}})
-      account2 = account_fixture(%{data: %{"hello" => "pinkie"}, name: "some name 2"})
+      account_fixture(%{data: %{"hello" => "pinkie"}, name: "some name 2"})
       assert Calamity.search_accounts_by_map(%{"hello" => "world"}) == [account1]
     end
 
@@ -205,6 +205,26 @@ defmodule Calamity.CalamityTest do
     test "change_pool/1 returns a pool changeset" do
       pool = pool_fixture()
       assert %Ecto.Changeset{} = Calamity.change_pool(pool)
+    end
+
+    test "add_account_to_pool/2 adds account to pool" do
+      pool = pool_fixture()
+      account = account_fixture()
+      assert {:ok, %Pool{}} = Calamity.add_account_to_pool(account, pool)
+    end
+
+    test "add_account_to_pool/2 is idempotent" do
+      pool = pool_fixture()
+      account = account_fixture()
+      assert {:ok, %Pool{}} = Calamity.add_account_to_pool(account, pool)
+      assert {:ok, %Pool{}} = Calamity.add_account_to_pool(account, pool)
+    end
+
+    test "remove_account_from_pool/2 removes account from a pool" do
+      pool = pool_fixture
+      account = account_fixture()
+      assert {:ok, %Pool{}} = Calamity.add_account_to_pool(account, pool)
+      assert {:ok, %Pool{}} = Calamity.remove_account_from_pool(account, pool)
     end
   end
 end

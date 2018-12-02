@@ -4,7 +4,11 @@ defmodule Calamity.Calamity.Pool do
 
   schema "pools" do
     field(:name, :string)
-    many_to_many(:accounts, Calamity.Calamity.Account, join_through: "pool_accounts")
+
+    many_to_many(:accounts, Calamity.Calamity.Account,
+      join_through: "pool_accounts",
+      on_replace: :delete
+    )
 
     timestamps()
   end

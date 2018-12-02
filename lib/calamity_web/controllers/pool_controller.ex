@@ -40,4 +40,22 @@ defmodule CalamityWeb.PoolController do
       send_resp(conn, :no_content, "")
     end
   end
+
+  def add_account(conn, %{"pool_id" => pool_id, "account_id" => account_id}) do
+    pool = Calamity.get_pool!(pool_id)
+    account = Calamity.get_account!(account_id)
+
+    with {:ok, %Pool{} = pool} <- Calamity.add_account_to_pool(account, pool) do
+      render(conn, "show.json", pool: pool)
+    end
+  end
+
+  def remove_account(conn, %{"pool_id" => pool_id, "account_id" => account_id}) do
+    pool = Calamity.get_pool!(pool_id)
+    account = Calamity.get_account!(account_id)
+
+    with {:ok, %Pool{} = pool} <- Calamity.remove_account_from_pool(account, pool) do
+      render(conn, "show.json", pool: pool)
+    end
+  end
 end

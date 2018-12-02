@@ -17,6 +17,11 @@ defmodule CalamityWeb.PoolControllerTest do
     pool
   end
 
+  def fixture(:account) do
+    {:ok, account} = Calamity.create_account(%{name: "some account", data: %{}})
+    account
+  end
+
   setup %{conn: conn} do
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
   end
@@ -81,8 +86,44 @@ defmodule CalamityWeb.PoolControllerTest do
     end
   end
 
+  describe "add account to pool" do
+    setup [:create_pool, :create_account]
+
+    test "adds account to pool", %{conn: conn, pool: pool, account: account} do
+      conn = put(conn, Routes.pool_path(conn, :add_account, pool, account))
+      assert %{"id" => id} = json_response(conn, 200)["data"]
+    end
+
+    test "account does not exist", %{conn: conn, pool: pool, account: account} do
+      assert_error_sent 404, fn ->
+        put(conn, Routes.pool_path(conn, :add_account, pool, %{account | id: 666}))
+      end
+    end
+  end
+
+  describe "remove account from pool" do
+    setup [:create_pool_with_account]
+
+    test "remove account from a pool", %{conn: conn, pool: pool, account: account} do
+      conn = put(conn, Routes.pool_path(conn, :remove_account, pool, account))
+      assert %{"id" => id} = json_response(conn, 200)["data"]
+    end
+  end
+
   defp create_pool(_) do
     pool = fixture(:pool)
     {:ok, pool: pool}
+  end
+
+  defp create_account(_) do
+    account = fixture(:account)
+    {:ok, account: account}
+  end
+
+  defp create_pool_with_account(_) do
+    pool = fixture(:pool)
+    account = fixture(:account)
+    Calamity.add_account_to_pool(account, pool)
+    {:ok, [account: account, pool: pool]}
   end
 end

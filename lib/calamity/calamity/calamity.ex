@@ -7,6 +7,7 @@ defmodule Calamity.Calamity do
   alias Calamity.Repo
 
   alias Calamity.Calamity.Account
+  alias Calamity.Calamity.Pool
 
   @doc """
   Returns the list of accounts.
@@ -189,8 +190,6 @@ defmodule Calamity.Calamity do
     update_account(account, %{locked: true})
   end
 
-  alias Calamity.Calamity.Pool
-
   @doc """
   Returns the list of pools.
 
@@ -294,5 +293,35 @@ defmodule Calamity.Calamity do
   """
   def change_pool(%Pool{} = pool) do
     Pool.changeset(pool, %{})
+  end
+
+  @doc """
+  Adds account to a pool
+
+  """
+  def add_account_to_pool(%Account{} = account, %Pool{} = pool) do
+    pool = Repo.preload(pool, :accounts)
+
+    pool
+    |> change_pool()
+    |> Ecto.Changeset.put_assoc(:accounts, [account | pool.accounts])
+    |> Repo.update()
+  end
+
+  @doc """
+  Removes account from a pool
+
+  """
+  def remove_account_from_pool(%Account{} = account, %Pool{} = pool) do
+    pool = Repo.preload(pool, :accounts)
+
+    accounts =
+      pool.accounts
+      |> Enum.reject(&(&1.id == account.id))
+
+    pool
+    |> change_pool()
+    |> Ecto.Changeset.put_assoc(:accounts, accounts)
+    |> Repo.update()
   end
 end
