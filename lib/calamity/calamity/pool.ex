@@ -4,6 +4,7 @@ defmodule Calamity.Calamity.Pool do
 
   schema "pools" do
     field(:name, :string)
+    field(:private, :boolean, default: false)
 
     many_to_many(:accounts, Calamity.Calamity.Account,
       join_through: "pool_accounts",
@@ -18,6 +19,14 @@ defmodule Calamity.Calamity.Pool do
     pool
     |> cast(attrs, [:name])
     |> validate_required([:name])
-    |> unique_constraint(:name)
+    |> unique_constraint(:name, name: :pools_name_private_index)
+  end
+
+  @doc false
+  def private_changeset(pool, attrs) do
+    pool
+    |> cast(attrs, [:name, :private])
+    |> validate_required([:name])
+    |> unique_constraint(:name, name: :pools_name_private_index)
   end
 end

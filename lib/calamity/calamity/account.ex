@@ -7,6 +7,11 @@ defmodule Calamity.Calamity.Account do
     field(:name, :string)
     field(:locked, :boolean, default: false)
 
+    many_to_many(:pools, Calamity.Calamity.Pool,
+      join_through: "pool_accounts",
+      on_replace: :delete
+    )
+
     timestamps()
   end
 

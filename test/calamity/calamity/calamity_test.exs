@@ -109,10 +109,12 @@ defmodule Calamity.CalamityTest do
                Calamity.update_account(account1, %{name: account2.name})
     end
 
-    test "delete_account/1 deletes the account" do
+    test "delete_account/1 deletes the account and private pool" do
       account = account_fixture()
       assert {:ok, %Account{}} = Calamity.delete_account(account)
       assert_raise Ecto.NoResultsError, fn -> Calamity.get_account!(account.id) end
+
+      assert_raise Ecto.NoResultsError, fn -> Calamity.get_pool!(account.name) end
     end
 
     test "change_account/1 returns an account changeset" do
@@ -134,8 +136,8 @@ defmodule Calamity.CalamityTest do
   describe "pools" do
     alias Calamity.Pool
 
-    @valid_attrs %{name: "some name"}
-    @update_attrs %{name: "some updated name"}
+    @valid_attrs %{name: "some pool name"}
+    @update_attrs %{name: "some updated pool name"}
     @invalid_attrs %{name: nil}
 
     def pool_fixture(attrs \\ %{}) do
@@ -162,9 +164,15 @@ defmodule Calamity.CalamityTest do
       assert Calamity.get_pool!(pool.name) == pool
     end
 
+    test "creating account also created private pool with the same name" do
+      account = account_fixture()
+
+      assert Repo.get_by!(Pool, name: account.name, private: true)
+    end
+
     test "create_pool/1 with valid data creates a pool" do
       assert {:ok, %Pool{} = pool} = Calamity.create_pool(@valid_attrs)
-      assert pool.name == "some name"
+      assert pool.name == "some pool name"
     end
 
     test "create_pool/1 with invalid data returns error changeset" do
@@ -180,7 +188,7 @@ defmodule Calamity.CalamityTest do
     test "update_pool/2 with valid data updates the pool" do
       pool = pool_fixture()
       assert {:ok, %Pool{} = pool} = Calamity.update_pool(pool, @update_attrs)
-      assert pool.name == "some updated name"
+      assert pool.name == "some updated pool name"
     end
 
     test "update_pool/2 with invalid data returns error changeset" do

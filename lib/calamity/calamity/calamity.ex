@@ -117,9 +117,22 @@ defmodule Calamity.Calamity do
 
   """
   def create_account(attrs \\ %{}) do
-    %Account{}
-    |> Account.changeset(attrs)
-    |> Repo.insert()
+    Ecto.Multi.new()
+    |> Ecto.Multi.insert(:account, Account.changeset(%Account{}, attrs))
+    |> Ecto.Multi.run(:new_pool, fn _repo, %{account: account} ->
+      create_private_pool(%{name: account.name, private: true})
+    end)
+    |> Ecto.Multi.run(:add_account_to_pool, fn _repo, %{account: account, new_pool: new_pool} ->
+      add_account_to_pool(account, new_pool)
+    end)
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{account: created_account}} ->
+        {:ok, created_account}
+
+      {:error, _, error, _} ->
+        {:error, error}
+    end
   end
 
   @doc """
@@ -153,7 +166,19 @@ defmodule Calamity.Calamity do
 
   """
   def delete_account(%Account{} = account) do
-    Repo.delete(account)
+    [private_pool] = Repo.preload(account, pools: from(p in Pool, where: p.private == true)).pools
+
+    Ecto.Multi.new()
+    |> Ecto.Multi.delete(:delete_account, account)
+    |> Ecto.Multi.delete(:delete_private_pool, private_pool)
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{delete_account: account}} ->
+        {:ok, account}
+
+      error ->
+        error
+    end
   end
 
   @doc """
@@ -226,7 +251,7 @@ defmodule Calamity.Calamity do
         Repo.get!(Pool, id)
 
       true ->
-        Repo.get_by!(Pool, name: id)
+        Repo.get_by!(Pool, name: id, private: false)
     end
   end
 
@@ -245,6 +270,12 @@ defmodule Calamity.Calamity do
   def create_pool(attrs \\ %{}) do
     %Pool{}
     |> Pool.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def create_private_pool(attrs \\ %{}) do
+    %Pool{}
+    |> Pool.private_changeset(attrs)
     |> Repo.insert()
   end
 
