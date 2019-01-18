@@ -229,7 +229,7 @@ defmodule Calamity.CalamityTest do
     end
 
     test "remove_account_from_pool/2 removes account from a pool" do
-      pool = pool_fixture
+      pool = pool_fixture()
       account = account_fixture()
       assert {:ok, %Pool{}} = Calamity.add_account_to_pool(account, pool)
       assert {:ok, %Pool{}} = Calamity.remove_account_from_pool(account, pool)

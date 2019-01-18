@@ -35,15 +35,20 @@ defmodule CalamityWeb.AccountControllerTest do
     setup [:create_account]
 
     test "performs a full text search for account" do
-      conn = post(conn, Routes.account_path(conn, :search, search: "name"))
+      conn = post(build_conn(), Routes.account_path(build_conn(), :search, search: "name"))
       assert json_response(conn, 200)["data"] |> length() == 1
 
-      conn = post(conn, Routes.account_path(conn, :search, search: "hello"))
+      conn = post(build_conn(), Routes.account_path(build_conn(), :search, search: "hello"))
       assert json_response(conn, 200)["data"] |> length() == 0
     end
 
     test "performs a json search for account" do
-      conn = post(conn, Routes.account_path(conn, :search, search: %{"hello" => "world"}))
+      conn =
+        post(
+          build_conn(),
+          Routes.account_path(build_conn(), :search, search: %{"hello" => "world"})
+        )
+
       assert json_response(conn, 200)["data"] |> length() == 0
     end
   end
