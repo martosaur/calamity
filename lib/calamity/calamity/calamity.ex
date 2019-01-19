@@ -202,17 +202,12 @@ defmodule Calamity.Calamity do
       {:ok, %Account{}}
 
   """
-  def lock_account(%Account{locked: true} = account) do
-    error_changeset =
-      account
-      |> Ecto.Changeset.change()
-      |> Ecto.Changeset.add_error(:locked, "already locked")
+  def lock_account(%Account{} = account) do
+    account = Repo.preload(account, pools: from(p in Pool, where: p.private == true, limit: 1))
 
-    {:error, error_changeset}
-  end
-
-  def lock_account(%Account{locked: false} = account) do
-    update_account(account, %{locked: true})
+    account.pools
+    |> hd()
+    |> lock_account_in_pool()
   end
 
   @doc """
@@ -354,5 +349,29 @@ defmodule Calamity.Calamity do
     |> change_pool()
     |> Ecto.Changeset.put_assoc(:accounts, accounts)
     |> Repo.update()
+  end
+
+  def lock_account_in_pool(%Pool{} = pool) do
+    Repo.transaction(fn ->
+      unlocked_accounts_query =
+        from(a in Account, where: a.locked == false, limit: 1, lock: "FOR UPDATE NOWAIT")
+
+      p = Repo.preload(pool, accounts: unlocked_accounts_query)
+
+      case p.accounts do
+        [] ->
+          Repo.rollback(:no_account_to_lock)
+
+        [account] ->
+          update_account(account, %{locked: true})
+          |> case do
+            {:ok, account} ->
+              account
+
+            {:error, error} ->
+              Repo.rollback(error)
+          end
+      end
+    end)
   end
 end

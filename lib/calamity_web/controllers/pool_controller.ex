@@ -3,6 +3,7 @@ defmodule CalamityWeb.PoolController do
 
   alias Calamity.Calamity
   alias Calamity.Pool
+  alias Calamity.Account
 
   action_fallback CalamityWeb.FallbackController
 
@@ -56,6 +57,16 @@ defmodule CalamityWeb.PoolController do
 
     with {:ok, %Pool{} = pool} <- Calamity.remove_account_from_pool(account, pool) do
       render(conn, "show.json", pool: pool)
+    end
+  end
+
+  def lock(conn, %{"pool_id" => pool_id}) do
+    pool = Calamity.get_pool!(pool_id)
+
+    with {:ok, %Account{} = account} <- Calamity.lock_account_in_pool(pool) do
+      conn
+      |> put_view(CalamityWeb.AccountView)
+      |> render("show.json", account: account)
     end
   end
 end

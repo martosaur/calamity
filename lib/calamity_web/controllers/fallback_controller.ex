@@ -19,4 +19,11 @@ defmodule CalamityWeb.FallbackController do
     |> put_view(CalamityWeb.ErrorView)
     |> render(:"404")
   end
+
+  def call(conn, {:error, :no_account_to_lock}) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> put_view(CalamityWeb.ErrorView)
+    |> render("error.json", reason: "Couldn't find an account to lock")
+  end
 end

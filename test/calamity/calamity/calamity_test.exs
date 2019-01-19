@@ -129,12 +129,13 @@ defmodule Calamity.CalamityTest do
 
     test "lock_account/1 cant lock if already locked" do
       account = account_fixture(locked: true)
-      assert {:error, %Ecto.Changeset{}} = Calamity.lock_account(account)
+      assert {:error, :no_account_to_lock} = Calamity.lock_account(account)
     end
   end
 
   describe "pools" do
     alias Calamity.Pool
+    alias Calamity.Account
 
     @valid_attrs %{name: "some pool name"}
     @update_attrs %{name: "some updated pool name"}
@@ -233,6 +234,31 @@ defmodule Calamity.CalamityTest do
       account = account_fixture()
       assert {:ok, %Pool{}} = Calamity.add_account_to_pool(account, pool)
       assert {:ok, %Pool{}} = Calamity.remove_account_from_pool(account, pool)
+    end
+
+    test "lock account in a pool" do
+      pool = pool_fixture()
+      account = account_fixture()
+      assert {:ok, %Pool{}} = Calamity.add_account_to_pool(account, pool)
+      assert {:ok, %Account{}} = Calamity.lock_account_in_pool(pool)
+      a = Calamity.get_account!(account.id)
+      assert a.locked == true
+    end
+
+    test "lock account in pool: chooses unlocked account" do
+      pool = pool_fixture()
+      account1 = account_fixture(%{locked: true})
+      account2 = account_fixture(%{name: "second"})
+      Calamity.add_account_to_pool(account1, pool)
+      Calamity.add_account_to_pool(account2, pool)
+      assert {:ok, %Account{name: "second", locked: true}} = Calamity.lock_account_in_pool(pool)
+    end
+
+    test "lock account in pool: error if no account" do
+      pool = pool_fixture()
+      account1 = account_fixture(locked: true)
+      Calamity.add_account_to_pool(account1, pool)
+      assert {:error, :no_account_to_lock} = Calamity.lock_account_in_pool(pool)
     end
   end
 end

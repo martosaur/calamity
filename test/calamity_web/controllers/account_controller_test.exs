@@ -128,7 +128,7 @@ defmodule CalamityWeb.AccountControllerTest do
       assert response(conn, 200)
 
       conn = post(conn, Routes.account_path(conn, :lock, account))
-      assert json_response(conn, 422)["errors"] != %{}
+      assert json_response(conn, 422)["error"] != %{}
     end
   end
 

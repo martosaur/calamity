@@ -30,5 +30,6 @@ defmodule CalamityWeb.Router do
     resources("/pools", PoolController, only: [:index, :show, :create, :update, :delete])
     put("/pools/:pool_id/accounts/:account_id", PoolController, :add_account)
     delete("/pools/:pool_id/accounts/:account_id", PoolController, :remove_account)
+    post("/pools/:pool_id/lock", PoolController, :lock)
   end
 end
