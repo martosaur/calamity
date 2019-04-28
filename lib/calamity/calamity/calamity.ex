@@ -211,6 +211,22 @@ defmodule Calamity.Calamity do
   end
 
   @doc """
+  Unlocks an account if possible
+  ## Examples
+
+      iex> lock_account(account)
+      {:ok, %Account{}}
+
+  """
+  def unlock_account(%Account{locked: true} = account) do
+    account
+    |> Account.changeset(%{locked: false})
+    |> Repo.update()
+  end
+
+  def unlock_account(%Account{}), do: {:error, :not_locked}
+
+  @doc """
   Returns the list of pools.
 
   ## Examples

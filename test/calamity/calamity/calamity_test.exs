@@ -131,6 +131,16 @@ defmodule Calamity.CalamityTest do
       account = account_fixture(locked: true)
       assert {:error, :no_account_to_lock} = Calamity.lock_account(account)
     end
+
+    test "unlock_account/1 unlocks account if it is locked" do
+      account = account_fixture(%{locked: true})
+      assert {:ok, %Account{}} = Calamity.unlock_account(account)
+    end
+
+    test "unlock_account/1 cannot unlock account if it is not locked" do
+      account = account_fixture(%{locked: false})
+      assert {:error, :not_locked} = Calamity.unlock_account(account)
+    end
   end
 
   describe "pools" do

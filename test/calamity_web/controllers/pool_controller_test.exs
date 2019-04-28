@@ -113,7 +113,7 @@ defmodule CalamityWeb.PoolControllerTest do
   describe "lock account in pool" do
     setup [:create_pool_with_account]
 
-    test "lock account in a pool", %{conn: conn, pool: pool, account: account} do
+    test "lock account in a pool", %{conn: conn, pool: pool, account: _account} do
       conn = post(conn, Routes.pool_path(conn, :lock, pool))
       assert %{"locked" => true} = json_response(conn, 200)["data"]
     end
