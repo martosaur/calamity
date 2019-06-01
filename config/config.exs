@@ -7,7 +7,8 @@ use Mix.Config
 
 # General application configuration
 config :calamity,
-  ecto_repos: [Calamity.Repo]
+  ecto_repos: [Calamity.Repo],
+  unlock_after: 3600
 
 # Configures the endpoint
 config :calamity, CalamityWeb.Endpoint,

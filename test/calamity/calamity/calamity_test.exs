@@ -124,7 +124,9 @@ defmodule Calamity.CalamityTest do
 
     test "lock_account/1 lock account if it is not locked" do
       account = account_fixture()
-      assert {:ok, %Account{}} = Calamity.lock_account(account)
+      assert {:ok, acc} = Calamity.lock_account(account)
+      assert acc.locked == true
+      assert acc.locked_at != nil
     end
 
     test "lock_account/1 cant lock if already locked" do
@@ -133,13 +135,29 @@ defmodule Calamity.CalamityTest do
     end
 
     test "unlock_account/1 unlocks account if it is locked" do
-      account = account_fixture(%{locked: true})
-      assert {:ok, %Account{}} = Calamity.unlock_account(account)
+      account = account_fixture(%{locked: true, locked_at: DateTimeHelpers.utc_now()})
+      assert {:ok, %Account{locked: false, locked_at: nil}} = Calamity.unlock_account(account)
     end
 
     test "unlock_account/1 cannot unlock account if it is not locked" do
       account = account_fixture(%{locked: false})
       assert {:error, :not_locked} = Calamity.unlock_account(account)
+    end
+
+    test "unlock_accounts_locked_for_more_than/1 unlock accounts based on timestamp" do
+      account1 = account_fixture(%{name: "old", locked: true})
+
+      account2 =
+        Repo.insert!(%Account{
+          name: "new",
+          locked: true,
+          data: %{},
+          locked_at: DateTimeHelpers.utc_now() |> DateTime.add(10)
+        })
+
+      Calamity.unlock_accounts_locked_for_more_than(-1)
+      assert %Account{locked: false, locked_at: nil} = Calamity.get_account!(account1.id)
+      assert %Account{locked: true} = Calamity.get_account!(account2.id)
     end
   end
 
@@ -253,6 +271,7 @@ defmodule Calamity.CalamityTest do
       assert {:ok, %Account{}} = Calamity.lock_account_in_pool(pool)
       a = Calamity.get_account!(account.id)
       assert a.locked == true
+      assert a.locked_at != nil
     end
 
     test "lock account in pool: chooses unlocked account" do

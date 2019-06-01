@@ -12,14 +12,19 @@ defmodule Calamity.Application do
       supervisor(Calamity.Repo, []),
       # Start the endpoint when the application starts
       supervisor(CalamityWeb.Endpoint, [])
-      # Start your own worker by calling: Calamity.Worker.start_link(arg1, arg2, arg3)
-      # worker(Calamity.Worker, [arg1, arg2, arg3]),
     ]
+
+    workers =
+      if Application.get_env(:calamity, :start_workers, true) do
+        [worker(Calamity.AccountUnlocker, [])]
+      else
+        []
+      end
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Calamity.Supervisor]
-    Supervisor.start_link(children, opts)
+    Supervisor.start_link(children ++ workers, opts)
   end
 
   # Tell Phoenix to update the endpoint configuration

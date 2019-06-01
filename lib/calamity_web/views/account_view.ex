@@ -11,6 +11,12 @@ defmodule CalamityWeb.AccountView do
   end
 
   def render("account.json", %{account: account}) do
-    %{id: account.id, name: account.name, data: account.data, locked: account.locked}
+    %{
+      id: account.id,
+      name: account.name,
+      data: account.data,
+      locked: account.locked,
+      locked_at: account.locked_at
+    }
   end
 end

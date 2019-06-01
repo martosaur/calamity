@@ -64,7 +64,8 @@ defmodule CalamityWeb.AccountControllerTest do
                "id" => id,
                "data" => %{},
                "name" => "some name",
-               "locked" => false
+               "locked" => false,
+               "locked_at" => nil
              }
     end
 
@@ -87,7 +88,8 @@ defmodule CalamityWeb.AccountControllerTest do
                "id" => id,
                "data" => %{},
                "name" => "some updated name",
-               "locked" => false
+               "locked" => false,
+               "locked_at" => nil
              }
     end
 
@@ -105,7 +107,8 @@ defmodule CalamityWeb.AccountControllerTest do
                "id" => id,
                "data" => %{},
                "name" => "some updated name",
-               "locked" => false
+               "locked" => false,
+               "locked_at" => nil
              }
     end
 

@@ -226,6 +226,15 @@ defmodule Calamity.Calamity do
 
   def unlock_account(%Account{}), do: {:error, :not_locked}
 
+  def unlock_accounts_locked_for_more_than(n_seconds) do
+    from(a in Account,
+      where:
+        a.locked == true and is_nil(a.locked_at) == false and
+          a.locked_at < ago(^n_seconds, "second")
+    )
+    |> Repo.update_all(set: [locked: false, locked_at: nil])
+  end
+
   @doc """
   Returns the list of pools.
 
