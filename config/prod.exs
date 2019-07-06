@@ -56,9 +56,4 @@ config :logger, level: :info
 # Alternatively, you can configure exactly which server to
 # start per endpoint:
 #
-#     config :calamity, CalamityWeb.Endpoint, server: true
-#
-
-# Finally import the config/prod.secret.exs
-# which should be versioned separately.
-import_config "prod.secret.exs"
+    config :calamity, CalamityWeb.Endpoint, server: true

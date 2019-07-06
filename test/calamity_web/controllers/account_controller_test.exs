@@ -142,12 +142,12 @@ defmodule CalamityWeb.AccountControllerTest do
       conn = post(conn, Routes.account_path(conn, :lock, account))
       assert response(conn, 200)
 
-      conn = delete(conn, Routes.account_path(conn, :unlock, account))
+      conn = post(conn, Routes.account_path(conn, :unlock, account))
       assert json_response(conn, 200)["data"]["locked"] == false
     end
 
     test "422 if already locked", %{conn: conn, account: account} do
-      conn = delete(conn, Routes.account_path(conn, :unlock, account))
+      conn = post(conn, Routes.account_path(conn, :unlock, account))
       assert json_response(conn, 422)["error"] != %{}
     end
   end

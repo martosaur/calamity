@@ -30,14 +30,16 @@ defmodule CalamityWeb.Router do
     pipe_through(:api)
     pipe_through(:production_only_auth)
 
-    resources("/accounts", AccountController, only: [:index, :show, :create, :update, :delete])
-    post("/accounts/search", AccountController, :search)
-    post("/accounts/:id/lock", AccountController, :lock)
-    delete("/accounts/:id/lock", AccountController, :unlock)
+    scope "/v1" do
+      resources("/accounts", AccountController, only: [:index, :show, :create, :update, :delete])
+      post("/accounts/search", AccountController, :search)
+      post("/accounts/:id/lock", AccountController, :lock)
+      post("/accounts/:id/unlock", AccountController, :unlock)
 
-    resources("/pools", PoolController, only: [:index, :show, :create, :update, :delete])
-    put("/pools/:pool_id/accounts/:account_id", PoolController, :add_account)
-    delete("/pools/:pool_id/accounts/:account_id", PoolController, :remove_account)
-    post("/pools/:pool_id/lock", PoolController, :lock)
+      resources("/pools", PoolController, only: [:index, :show, :create, :update, :delete])
+      put("/pools/:pool_id/accounts/:account_id", PoolController, :add_account)
+      delete("/pools/:pool_id/accounts/:account_id", PoolController, :remove_account)
+      post("/pools/:pool_id/lock", PoolController, :lock)
+    end
   end
 end

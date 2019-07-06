@@ -1,16 +1,17 @@
 defmodule CalamityWeb.MinimumAuth do
   import Plug.Conn
 
-  def init(_opts) do
-    "Bearer #{System.get_env("CALAMITY_AUTH_TOKEN")}"
+  def init(opts) do
+    opts
   end
 
-  def call(conn, auth_header_value) do
+  def call(conn, _opts) do
+    auth_header = "Bearer #{Application.get_env(:calamity, :auth_token)}"
+
     conn
     |> get_req_header("authorization")
-    |> IO.inspect()
     |> case do
-      [^auth_header_value] ->
+      [^auth_header] ->
         conn
 
       _ ->
