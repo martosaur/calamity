@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :calamity,
   start_workers: false
