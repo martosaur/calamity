@@ -56,4 +56,4 @@ config :logger, level: :info
 # Alternatively, you can configure exactly which server to
 # start per endpoint:
 #
-    config :calamity, CalamityWeb.Endpoint, server: true
+config :calamity, CalamityWeb.Endpoint, server: true

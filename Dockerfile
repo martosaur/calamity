@@ -1,5 +1,5 @@
 # ---- Build Stage ----
-FROM elixir:1.9.0 AS app_builder
+FROM elixir:1.9 AS app_builder
 
 ENV MIX_ENV=prod \
     LANG=C.UTF-8
@@ -31,10 +31,8 @@ FROM debian:stretch AS app
 ENV LANG=C.UTF-8
 
 # Install openssl
-RUN apt-get update && apt-get install -y openssl
-
 # Copy over the build artifact from the previous step and create a non root user
-RUN useradd --create-home app
+RUN apt-get update && apt-get install -y openssl && useradd --create-home app
 WORKDIR /home/app
 COPY --from=app_builder /app/_build .
 RUN chown -R app: ./prod
