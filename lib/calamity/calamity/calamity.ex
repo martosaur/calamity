@@ -210,6 +210,11 @@ defmodule Calamity.Calamity do
     |> lock_account_in_pool()
   end
 
+  def lock_account(id) do
+    get_account!(id)
+    |> lock_account()
+  end
+
   @doc """
   Unlocks an account if possible
   ## Examples
@@ -225,6 +230,11 @@ defmodule Calamity.Calamity do
   end
 
   def unlock_account(%Account{}), do: {:error, :not_locked}
+
+  def unlock_account(id) do
+    get_account!(id)
+    |> unlock_account()
+  end
 
   def unlock_accounts_locked_for_more_than(n_seconds) do
     from(a in Account,

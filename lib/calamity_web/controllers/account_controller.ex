@@ -57,17 +57,13 @@ defmodule CalamityWeb.AccountController do
   end
 
   def lock(conn, %{"id" => id}) do
-    account = Calamity.get_account!(id)
-
-    with {:ok, %Account{} = account} <- Calamity.lock_account(account) do
+    with {:ok, %Account{} = account} <- Calamity.lock_account(id) do
       render(conn, "show.json", account: account)
     end
   end
 
   def unlock(conn, %{"id" => id}) do
-    account = Calamity.get_account!(id)
-
-    with {:ok, %Account{} = account} <- Calamity.unlock_account(account) do
+    with {:ok, %Account{} = account} <- Calamity.unlock_account(id) do
       render(conn, "show.json", account: account)
     end
   end

@@ -7,29 +7,40 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Hello Calamity!</title>
+    <title>Calamity</title>
     <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>">
+    <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:200,300,400,600,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+    <script src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
   </head>
 
   <body>
-    <div class="container">
-      <header class="header">
-        <nav role="navigation">
-          <ul class="nav nav-pills pull-right">
-            <li><a href="http://www.phoenixframework.org/docs">Get Started</a></li>
-          </ul>
-        </nav>
-        <span class="logo"></span>
-      </header>
-
-      <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
-      <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
-
-      <main role="main">
-        <%= render @view_module, @view_template, assigns %>
-      </main>
-
-    </div> <!-- /container -->
-    <script src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
+    <div class="header header-dark unselectable header-animated">
+      <div class="header-brand">
+        <div class="nav-item">
+          <h6 class="title">
+            <%= link "Calamity", to: Routes.page_path(CalamityWeb.Endpoint, :index) %>
+          </h6>
+        </div>
+      </div>
+      <div class="header-nav" id="header-menu">
+        <div class="nav-left">
+          <div class="nav-item text-center">
+            <a href="https://github.com/martosaur/calamity">
+              <span class="icon">
+                <i class="fab fa-wrapper fa-github" aria-hidden="true"></i>
+              </span>
+            </a>
+          </div>
+          <div class="nav-item">
+            <%= link "Accounts", to: Routes.live_path(@conn, CalamityWeb.Live.Account.Index) %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <main class="content">
+      <%= render @view_module, @view_template, assigns %>
+    </main>
   </body>
 </html>

@@ -1,5 +1,6 @@
 defmodule CalamityWeb.Router do
   use CalamityWeb, :router
+  import Phoenix.LiveView.Router
 
   pipeline :browser do
     plug(:accepts, ["html"])
@@ -24,6 +25,8 @@ defmodule CalamityWeb.Router do
     pipe_through(:browser)
 
     get("/", PageController, :index)
+    live("/accounts", Live.Account.Index)
+    live("/accounts/:id", Live.Account.Show)
   end
 
   scope "/api", CalamityWeb do

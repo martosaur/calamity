@@ -1,0 +1,38 @@
+<div class="row level">
+    <div class="col-1">
+        <p>Name:</p>
+    </div>
+    <div class="col">
+        <input disabled type="name" value="<%= @account.name %>">
+    </div>
+</div>
+<div class="row level">
+    <div class="col-1">
+        <p>Locked:</p>
+    </div>
+    <%= if @account.locked do %>
+        <div class="col-4">
+            <div class="tag tag--danger tag--large">locked at <%= @account.locked_at %></div>
+        </div>
+        <div class="col">
+            <button phx-click="unlock" phx-value-account_id=<%= @account.id %>>unlock</button>
+        </div>
+    <% else %>
+        <div class="col-4">
+            <div class="tag tag--large">available</div>
+        </div>
+        <div class="col">
+            <button phx-click="lock" phx-value-account_id=<%= @account.id %>>lock</button>
+        </div>
+    <% end %>
+</div>
+<div class="row level">
+    <div class="col-1">
+        <p>Data:</p>
+    </div>
+    <div class="col">
+        <textarea disabled>
+            <%= Jason.encode!(@account.data) |> Jason.Formatter.pretty_print_to_iodata() %>
+        </textarea>
+    </div>
+</div>

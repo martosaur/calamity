@@ -86,7 +86,7 @@ docker build -t calamity .
 ```
 Then you can run the container. Make sure to specify `PORT`, `CALAMITY_AUTH_TOKEN` and `DATABASE_URL` environmental variables:
 ```
-docker run -p 4000:4000 -e "PORT=4000" -e "CALAMITY_AUTH_TOKEN=helloworld" -e "DATABASE_URL=postgres://postgres:postgres@host.docker.internal:5432/calamity_dev" calamity:latest
+docker run -p 4000:4000 -e "PORT=4000" -e "CALAMITY_AUTH_TOKEN=helloworld" -e "DATABASE_URL=postgres://postgres:postgres@host.docker.internal:5432/calamity_dev" -e "CALAMITY_LIVE_VIEW_SALT=5wJx/wmaNdguKacShUSjCpcNY7gt/nEG" calamity:latest
 ```
 
 ---

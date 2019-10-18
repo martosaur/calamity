@@ -1,5 +1,6 @@
 defmodule CalamityWeb.AccountView do
   use CalamityWeb, :view
+  import Phoenix.LiveView
   alias CalamityWeb.AccountView
 
   def render("index.json", %{accounts: accounts}) do

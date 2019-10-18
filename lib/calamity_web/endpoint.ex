@@ -1,6 +1,8 @@
 defmodule CalamityWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :calamity
 
+  socket("/live", Phoenix.LiveView.Socket)
+
   socket("/socket", CalamityWeb.UserSocket)
 
   # Serve at "/" the static files from "priv/static" directory.
