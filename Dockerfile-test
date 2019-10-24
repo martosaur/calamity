@@ -1,0 +1,9 @@
+FROM elixir:1.9
+
+ENV LANG=C.UTF-8
+
+# Install hex and rebar
+RUN mix local.hex --force && \
+    mix local.rebar --force
+
+WORKDIR /app

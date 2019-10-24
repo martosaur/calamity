@@ -1,0 +1,19 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:11
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+  calamity_test:
+    build:
+      context: .
+      dockerfile: Dockerfile-test
+    command: mix test
+    environment:
+      - MIX_ENV=docker_test
+    depends_on: 
+      - postgres
+    volumes: 
+      - .:/app
