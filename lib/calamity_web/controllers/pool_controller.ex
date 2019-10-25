@@ -60,10 +60,11 @@ defmodule CalamityWeb.PoolController do
     end
   end
 
-  def lock(conn, %{"pool_id" => pool_id}) do
+  def lock(conn, %{"pool_id" => pool_id} = params) do
     pool = Calamity.get_pool!(pool_id)
 
-    with {:ok, %Account{} = account} <- Calamity.lock_account_in_pool(pool) do
+    with {:ok, %Account{} = account} <-
+           Calamity.lock_account_in_pool(pool, for: Map.get(params, "lock_for")) do
       conn
       |> put_view(CalamityWeb.AccountView)
       |> render("show.json", account: account)

@@ -65,7 +65,8 @@ defmodule CalamityWeb.AccountControllerTest do
                "data" => %{},
                "name" => "some name",
                "locked" => false,
-               "locked_at" => nil
+               "locked_at" => nil,
+               "unlock_at" => nil
              }
     end
 
@@ -89,7 +90,8 @@ defmodule CalamityWeb.AccountControllerTest do
                "data" => %{},
                "name" => "some updated name",
                "locked" => false,
-               "locked_at" => nil
+               "locked_at" => nil,
+               "unlock_at" => nil
              }
     end
 
@@ -108,7 +110,8 @@ defmodule CalamityWeb.AccountControllerTest do
                "data" => %{},
                "name" => "some updated name",
                "locked" => false,
-               "locked_at" => nil
+               "locked_at" => nil,
+               "unlock_at" => nil
              }
     end
 
@@ -144,6 +147,7 @@ defmodule CalamityWeb.AccountControllerTest do
 
       conn = post(conn, Routes.account_path(conn, :unlock, account))
       assert json_response(conn, 200)["data"]["locked"] == false
+      assert json_response(conn, 200)["data"]["unlock_at"] == nil
     end
 
     test "422 if already locked", %{conn: conn, account: account} do

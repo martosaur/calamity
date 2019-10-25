@@ -3,25 +3,28 @@ defmodule Calamity.AccountUnlocker do
   require Logger
 
   def start_link do
-    GenServer.start_link(__MODULE__, Application.get_env(:calamity, :unlock_after))
+    GenServer.start_link(__MODULE__, nil)
   end
 
-  def init(unlock_after) do
-    Logger.info("Starting AccountUnlocker worker with unlock_after=#{inspect(unlock_after)}")
+  def init(_) do
     send(self(), :work)
-    {:ok, unlock_after}
+    {:ok, nil}
   end
 
-  def handle_info(:work, unlock_after) do
-    schedule_next_run(unlock_after)
-    Logger.info("Time has come to unlock accounts...")
-    {n, _} = Calamity.Calamity.unlock_accounts_locked_for_more_than(unlock_after)
-    Logger.info("Accounts unlocked: #{inspect(n)}")
-    {:noreply, unlock_after}
+  def handle_info(:work, _) do
+    schedule_next_run()
+    {n, _} = Calamity.Calamity.unlock_accounts_with_unlock_at_due()
+    Logger.debug("Accounts unlocked: #{inspect(n)}")
+    {:noreply, nil}
   end
 
-  defp schedule_next_run(unlock_after) do
-    Logger.info("Scheduling next unlock")
-    Process.send_after(self(), :work, min(unlock_after, 60) * 1000)
+  defp schedule_next_run do
+    next_unlock_in = 60
+
+    Logger.debug(
+      "Scheduling next unlock at #{inspect(DateTime.utc_now() |> DateTime.add(next_unlock_in))}"
+    )
+
+    Process.send_after(self(), :work, next_unlock_in * 1000)
   end
 end

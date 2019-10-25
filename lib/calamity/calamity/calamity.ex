@@ -202,17 +202,19 @@ defmodule Calamity.Calamity do
       {:ok, %Account{}}
 
   """
-  def lock_account(%Account{} = account) do
+  def lock_account(_, opts \\ [])
+
+  def lock_account(%Account{} = account, opts) do
     account = Repo.preload(account, pools: from(p in Pool, where: p.private == true, limit: 1))
 
     account.pools
     |> hd()
-    |> lock_account_in_pool()
+    |> lock_account_in_pool(opts)
   end
 
-  def lock_account(id) do
+  def lock_account(id, opts) do
     get_account!(id)
-    |> lock_account()
+    |> lock_account(opts)
   end
 
   @doc """
@@ -236,13 +238,11 @@ defmodule Calamity.Calamity do
     |> unlock_account()
   end
 
-  def unlock_accounts_locked_for_more_than(n_seconds) do
+  def unlock_accounts_with_unlock_at_due do
     from(a in Account,
-      where:
-        a.locked == true and is_nil(a.locked_at) == false and
-          a.locked_at < ago(^n_seconds, "second")
+      where: is_nil(a.unlock_at) == false and a.unlock_at <= ^DateTimeHelpers.utc_now()
     )
-    |> Repo.update_all(set: [locked: false, locked_at: nil])
+    |> Repo.update_all(set: [locked: false, locked_at: nil, unlock_at: nil])
   end
 
   @doc """
@@ -386,7 +386,7 @@ defmodule Calamity.Calamity do
     |> Repo.update()
   end
 
-  def lock_account_in_pool(%Pool{} = pool) do
+  def lock_account_in_pool(%Pool{} = pool, opts \\ []) do
     Repo.transaction(fn ->
       unlocked_accounts_query =
         from(a in Account, where: a.locked == false, limit: 1, lock: "FOR UPDATE NOWAIT")
@@ -398,7 +398,7 @@ defmodule Calamity.Calamity do
           Repo.rollback(:no_account_to_lock)
 
         [account] ->
-          update_account(account, %{locked: true})
+          update_account(account, %{locked: true, lock_for: Keyword.get(opts, :for)})
           |> case do
             {:ok, account} ->
               account

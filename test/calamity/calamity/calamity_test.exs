@@ -122,14 +122,23 @@ defmodule Calamity.CalamityTest do
       assert %Ecto.Changeset{} = Calamity.change_account(account)
     end
 
-    test "lock_account/1 lock account if it is not locked" do
+    test "lock_account/2 lock account if it is not locked" do
       account = account_fixture()
       assert {:ok, acc} = Calamity.lock_account(account)
       assert acc.locked == true
       assert acc.locked_at != nil
+      assert DateTime.diff(acc.unlock_at, DateTimeHelpers.utc_now()) >= 3599
     end
 
-    test "lock_account/1 cant lock if already locked" do
+    test "lock_account/2 lock account for 1 minute" do
+      account = account_fixture()
+      assert {:ok, acc} = Calamity.lock_account(account, for: 60)
+      assert acc.locked == true
+      assert acc.unlock_at != nil
+      assert DateTime.diff(acc.unlock_at, DateTimeHelpers.utc_now()) >= 59
+    end
+
+    test "lock_account/2 cant lock if already locked" do
       account = account_fixture(locked: true)
       assert {:error, :no_account_to_lock} = Calamity.lock_account(account)
     end
@@ -144,19 +153,30 @@ defmodule Calamity.CalamityTest do
       assert {:error, :not_locked} = Calamity.unlock_account(account)
     end
 
-    test "unlock_accounts_locked_for_more_than/1 unlock accounts based on timestamp" do
-      account1 = account_fixture(%{name: "old", locked: true})
+    test "unlock_accounts_with_unlock_at_due/1 unlock accounts based on timestamp" do
+      account1 =
+        Repo.insert!(%Account{
+          name: "old",
+          locked: true,
+          data: %{},
+          locked_at: DateTimeHelpers.utc_now(),
+          unlock_at: DateTimeHelpers.get_unlock_at(-10)
+        })
 
       account2 =
         Repo.insert!(%Account{
           name: "new",
           locked: true,
           data: %{},
-          locked_at: DateTimeHelpers.utc_now() |> DateTime.add(10)
+          locked_at: DateTimeHelpers.utc_now(),
+          unlock_at: DateTimeHelpers.get_unlock_at(10)
         })
 
-      Calamity.unlock_accounts_locked_for_more_than(-1)
-      assert %Account{locked: false, locked_at: nil} = Calamity.get_account!(account1.id)
+      Calamity.unlock_accounts_with_unlock_at_due()
+
+      assert %Account{locked: false, locked_at: nil, unlock_at: nil} =
+               Calamity.get_account!(account1.id)
+
       assert %Account{locked: true} = Calamity.get_account!(account2.id)
     end
   end

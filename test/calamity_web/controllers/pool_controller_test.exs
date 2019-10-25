@@ -114,8 +114,13 @@ defmodule CalamityWeb.PoolControllerTest do
     setup [:create_pool_with_account]
 
     test "lock account in a pool", %{conn: conn, pool: pool, account: _account} do
-      conn = post(conn, Routes.pool_path(conn, :lock, pool))
+      conn = post(conn, Routes.pool_path(conn, :lock, pool), lock_for: "60")
       assert %{"locked" => true} = json_response(conn, 200)["data"]
+
+      {:ok, unlock_at, _} =
+        json_response(conn, 200)["data"]["unlock_at"] |> DateTime.from_iso8601()
+
+      assert DateTime.diff(unlock_at, DateTime.utc_now()) >= 60
     end
   end
 

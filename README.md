@@ -49,7 +49,7 @@ PUT http://calamity:4000/api/v1/pools/<pool_id>/accounts/<account_id>
 ```
 Lock account from pool
 ```
-POST http://calamity:4000/api/v1/pools/<pool_id>/lock
+POST http://calamity:4000/api/v1/pools/<pool_id>/lock?lock_for=300
 ```
 Unlock account if you don't need it anymore:
 ```

@@ -17,7 +17,8 @@ defmodule CalamityWeb.AccountView do
       name: account.name,
       data: account.data,
       locked: account.locked,
-      locked_at: account.locked_at
+      locked_at: account.locked_at,
+      unlock_at: account.unlock_at
     }
   end
 end

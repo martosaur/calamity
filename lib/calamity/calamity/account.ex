@@ -7,6 +7,7 @@ defmodule Calamity.Calamity.Account do
     field(:name, :string)
     field(:locked, :boolean, default: false)
     field(:locked_at, :utc_datetime, default: nil)
+    field(:unlock_at, :utc_datetime, default: nil)
 
     many_to_many(:pools, Calamity.Calamity.Pool,
       join_through: "pool_accounts",
@@ -25,8 +26,10 @@ defmodule Calamity.Calamity.Account do
     |> prepare_changes(fn changeset ->
       if get_change(changeset, :locked) do
         put_change(changeset, :locked_at, DateTimeHelpers.utc_now())
+        |> put_change(:unlock_at, Map.get(attrs, :lock_for) |> DateTimeHelpers.get_unlock_at())
       else
         put_change(changeset, :locked_at, nil)
+        |> put_change(:unlock_at, nil)
       end
     end)
   end
