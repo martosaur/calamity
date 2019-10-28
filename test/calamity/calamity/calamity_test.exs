@@ -309,5 +309,12 @@ defmodule Calamity.CalamityTest do
       Calamity.add_account_to_pool(account1, pool)
       assert {:error, :no_account_to_lock} = Calamity.lock_account_in_pool(pool)
     end
+
+    test "lock account in pool: error if exceedes max lock for value" do
+      pool = pool_fixture()
+      account1 = account_fixture()
+      Calamity.add_account_to_pool(account1, pool)
+      assert {:error, %Ecto.Changeset{}} = Calamity.lock_account_in_pool(pool, for: 9_999_999_999)
+    end
   end
 end

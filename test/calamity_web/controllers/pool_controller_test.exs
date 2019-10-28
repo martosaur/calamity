@@ -122,6 +122,13 @@ defmodule CalamityWeb.PoolControllerTest do
 
       assert DateTime.diff(unlock_at, DateTime.utc_now()) >= 60
     end
+
+    test "lock account in a pool for too long", %{conn: conn, pool: pool, account: _account} do
+      conn = post(conn, Routes.pool_path(conn, :lock, pool), lock_for: "99999999")
+
+      assert %{"lock_for" => ["must be less than or equal to 86400"]} =
+               json_response(conn, 422)["errors"]
+    end
   end
 
   defp create_pool(_) do
